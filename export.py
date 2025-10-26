@@ -423,14 +423,31 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
 
 
     import openvino.runtime as ov
-    from openvino.tools import mo
+
+# Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
+#    from openvino.tools import mo
+		from openvino.frontend import FrontEndManager  # replaces old 'openvino.tools.mo'
 
     LOGGER.info(f"\n{prefix} starting export with openvino {ov.__version__}...")
     f = str(file).replace(file.suffix, f"_{'int8_' if int8 else ''}openvino_model{os.sep}")
     f_onnx = file.with_suffix(".onnx")
     f_ov = str(Path(f) / file.with_suffix(".xml").name)
 
-    ov_model = mo.convert_model(f_onnx, model_name=file.stem, framework="onnx", compress_to_fp16=half)  # export
+# Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
+    #ov_model = mo.convert_model(f_onnx, model_name=file.stem, framework="onnx", compress_to_fp16=half)  # export
+
+		# Use FrontEndManager for ONNX → OpenVINO conversion (OpenVINO 2024+)
+    fem = FrontEndManager()
+    frontend = fem.load_by_framework("onnx")
+    ov_model = frontend.convert(frontend.load(str(f_onnx)))
+
+    # Optional FP16 precision conversion
+    if half:
+        from openvino.runtime.passes import Manager, ConvertPrecision
+        from openvino.runtime import Type
+        pm = Manager()
+        pm.register_pass(ConvertPrecision([Type.f32], Type.f16))
+        pm.run_passes(ov_model)
 
     if int8:
         check_requirements("nncf>=2.5.0")  # requires at least version 2.5.0 to use the post-training quantization
