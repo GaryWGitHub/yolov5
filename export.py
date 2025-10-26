@@ -422,11 +422,12 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
     check_requirements("openvino>=2025.3.0")
 
 
-    import openvino.runtime as ov
+    #import openvino.runtime as ov
+    import openvino as ov
 
 # Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
 #    from openvino.tools import mo
-    from openvino.frontend import FrontEndManager  # replaces old 'openvino.tools.mo'
+#    from openvino.frontend import FrontEndManager  # replaces old 'openvino.tools.mo'
 
     LOGGER.info(f"\n{prefix} starting export with openvino {ov.__version__}...")
     f = str(file).replace(file.suffix, f"_{'int8_' if int8 else ''}openvino_model{os.sep}")
@@ -435,19 +436,19 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
 
 # Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
     #ov_model = mo.convert_model(f_onnx, model_name=file.stem, framework="onnx", compress_to_fp16=half)  # export
+		ov_model = ov.convert_model(f_onnx)  # export
 
 		# Use FrontEndManager for ONNX → OpenVINO conversion (OpenVINO 2024+)
-    fem = FrontEndManager()
-    frontend = fem.load_by_framework("onnx")
-    ov_model = frontend.convert(frontend.load(str(f_onnx)))
+    #fem = FrontEndManager()
+    #frontend = fem.load_by_framework("onnx")
+    #ov_model = frontend.convert(frontend.load(str(f_onnx)))
 
     # Optional FP16 precision conversion
-    if half:
-        from openvino.runtime.passes import Manager, ConvertPrecision
-        from openvino.runtime import Type
-        pm = Manager()
-        pm.register_pass(ConvertPrecision([Type.f32], Type.f16))
-        pm.run_passes(ov_model)
+#    if half:
+#        from openvino.runtime.passes import Manager
+#        from openvino.runtime import Type
+#        pm = Manager()
+#        pm.run_passes(ov_model)
 
     if int8:
         check_requirements("nncf>=2.5.0")  # requires at least version 2.5.0 to use the post-training quantization
@@ -487,7 +488,10 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
         quantization_dataset = nncf.Dataset(ds, transform_fn)
         ov_model = nncf.quantize(ov_model, quantization_dataset, preset=nncf.QuantizationPreset.MIXED)
 
-    ov.serialize(ov_model, f_ov)  # save
+    #ov.serialize(ov_model, f_ov)  # save
+		ov.save_model(ov_model, f_ov, compress_to_fp16=half and not int8)  # save
+
+
     yaml_save(Path(f) / file.with_suffix(".yaml").name, metadata)  # add metadata.yaml
     return f, None
 
@@ -1400,7 +1404,9 @@ def run(
     # Load PyTorch model
     device = select_device(device)
     if half:
-        assert device.type != "cpu" or coreml, "--half only compatible with GPU export, i.e. use --device 0"
+# GW - Changed because this is not true. fp16 works with CPU
+        #assert device.type != "cpu" or coreml, "--half only compatible with GPU export, i.e. use --device 0"
+        assert device.type != coreml, "--half only compatible with GPU export, i.e. use --device 0"
         assert not dynamic, "--half not compatible with --dynamic, i.e. use either --half or --dynamic but not both"
     model = attempt_load(weights, device=device, inplace=True, fuse=True)  # load FP32 model
 
