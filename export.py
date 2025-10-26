@@ -18,8 +18,8 @@ TensorFlow.js               | `tfjs`                        | yolov5s_web_model/
 PaddlePaddle                | `paddle`                      | yolov5s_paddle_model/
 
 Requirements:
-    $ pip install -r requirements.txt coremltools onnx onnx-simplifier onnxruntime openvino-dev tensorflow-cpu  # CPU
-    $ pip install -r requirements.txt coremltools onnx onnx-simplifier onnxruntime-gpu openvino-dev tensorflow  # GPU
+    $ pip install -r requirements.txt coremltools onnx onnx-simplifier onnxruntime openvino tensorflow-cpu  # CPU
+    $ pip install -r requirements.txt coremltools onnx onnx-simplifier onnxruntime-gpu openvino tensorflow  # GPU
 
 Usage:
     $ python export.py --weights yolov5s.pt --include torchscript onnx openvino engine coreml tflite ...
@@ -399,8 +399,8 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
             successful; otherwise, None.
 
     Notes:
-        - Requires `openvino-dev` package version 2023.0 or higher. Install with:
-          `$ pip install openvino-dev>=2023.0`
+        - Requires `openvino` package version 2025.3.0 or higher. Install with:
+          `$ pip install openvino>=2025.3.0`
         - For INT8 quantization, also requires `nncf` library version 2.5.0 or higher. Install with:
           `$ pip install nncf>=2.5.0`
 
@@ -418,8 +418,8 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
         the specified file path.
     """
 # Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
-    check_requirements("openvino-dev>=2023.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
-    check_requirements("openvino-dev>=2025.3.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
+#    check_requirements("openvino-dev>=2023.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
+    check_requirements("openvino>=2025.3.0")
 
 
     import openvino.runtime as ov
