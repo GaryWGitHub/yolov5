@@ -436,7 +436,7 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
 
 # Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
     #ov_model = mo.convert_model(f_onnx, model_name=file.stem, framework="onnx", compress_to_fp16=half)  # export
-		ov_model = ov.convert_model(f_onnx)  # export
+    ov_model = ov.convert_model(f_onnx)  # export
 
 		# Use FrontEndManager for ONNX → OpenVINO conversion (OpenVINO 2024+)
     #fem = FrontEndManager()
