@@ -519,7 +519,9 @@ class DetectMultiBackend(nn.Module):
                 stride, names = int(meta["stride"]), eval(meta["names"])
         elif xml:  # OpenVINO
             LOGGER.info(f"Loading {w} for OpenVINO inference...")
-            check_requirements("openvino>=2023.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
+						# Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
+            #check_requirements("openvino>=2023.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
+            check_requirements("openvino>=2025.3.0")  # requires openvino: https://pypi.org/project/openvino/
             from openvino.runtime import Core, Layout, get_batch
 
             core = Core()

@@ -31,7 +31,9 @@ COPY . /usr/src/app
 COPY requirements.txt .
 RUN python3 -m pip install --upgrade pip wheel
 RUN pip install --no-cache -r requirements.txt albumentations comet gsutil notebook \
-    coremltools onnx onnx-simplifier onnxruntime 'openvino-dev>=2023.0'
+# Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
+#    coremltools onnx onnx-simplifier onnxruntime 'openvino-dev>=2023.0'
+    coremltools onnx onnx-simplifier onnxruntime 'openvino>=2025.3.0'
     # tensorflow tensorflowjs \
 
 # Set environment variables
