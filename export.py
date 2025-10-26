@@ -426,7 +426,7 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
 
 # Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
 #    from openvino.tools import mo
-		from openvino.frontend import FrontEndManager  # replaces old 'openvino.tools.mo'
+    from openvino.frontend import FrontEndManager  # replaces old 'openvino.tools.mo'
 
     LOGGER.info(f"\n{prefix} starting export with openvino {ov.__version__}...")
     f = str(file).replace(file.suffix, f"_{'int8_' if int8 else ''}openvino_model{os.sep}")
