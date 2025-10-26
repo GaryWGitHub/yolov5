@@ -489,7 +489,7 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
         ov_model = nncf.quantize(ov_model, quantization_dataset, preset=nncf.QuantizationPreset.MIXED)
 
     #ov.serialize(ov_model, f_ov)  # save
-		ov.save_model(ov_model, f_ov, compress_to_fp16=half and not int8)  # save
+    ov.save_model(ov_model, f_ov, compress_to_fp16=half and not int8)  # save
 
 
     yaml_save(Path(f) / file.with_suffix(".yaml").name, metadata)  # add metadata.yaml
