@@ -417,7 +417,11 @@ def export_openvino(file, metadata, half, int8, data, prefix=colorstr("OpenVINO:
         This will export the YOLOv5 model to OpenVINO with FP16 precision but without INT8 quantization, saving it to
         the specified file path.
     """
+# Changed by GW to support openvino 2025.3.0, (openvino-dev no longer supported
     check_requirements("openvino-dev>=2023.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
+    check_requirements("openvino-dev>=2025.3.0")  # requires openvino-dev: https://pypi.org/project/openvino-dev/
+
+
     import openvino.runtime as ov
     from openvino.tools import mo
 
